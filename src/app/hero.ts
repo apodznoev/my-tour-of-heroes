@@ -7,6 +7,14 @@ export class Hero {
     this._name = name;
   }
 
+  get id(): number {
+    return this._id;
+  }
+
+  set id(value: number) {
+    this._id = value;
+  }
+
   set name(name: string) {
     this._name = name;
   }
