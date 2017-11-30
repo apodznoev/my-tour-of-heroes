@@ -1,11 +1,17 @@
 import { TestBed, async } from '@angular/core/testing';
 import { AppComponent } from './app.component';
+import {HeroesComponent} from './heroes/heroes.component';
+import {RandomChangePipe} from './random-change.pipe';
+import {FormsModule} from '@angular/forms';
 describe('AppComponent', () => {
   beforeEach(async(() => {
     TestBed.configureTestingModule({
       declarations: [
-        AppComponent
+        AppComponent,
+        HeroesComponent,
+        RandomChangePipe
       ],
+      imports:[FormsModule]
     }).compileComponents();
   }));
   it('should create the app', async(() => {
