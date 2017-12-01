@@ -32,6 +32,15 @@ export class HeroDetailComponent implements OnInit {
     this._location.back();
   }
 
+  save() {
+    this._heroService.save(this._hero)
+      .subscribe(updated => this._hero = updated);
+  }
+
+  reset() {
+    this.retrieveHero();
+  }
+
   killHero() {
     this._messageService.add(`Killing hero: ${this._hero.id}`);
     this._heroService.deleteHero(this._hero.id)

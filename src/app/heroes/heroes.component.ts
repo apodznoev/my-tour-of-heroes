@@ -1,7 +1,7 @@
-import {Component, Injectable, OnInit} from '@angular/core';
-import {Hero} from '../hero';
-import {HeroService} from '../hero.service';
-import {MessageService} from '../message.service';
+import { Component, Injectable, OnInit } from '@angular/core';
+import { Hero } from '../hero';
+import { HeroService } from '../hero.service';
+import { MessageService } from '../message.service';
 
 @Component({
   selector: 'app-heroes',
@@ -24,9 +24,18 @@ export class HeroesComponent implements OnInit {
     return this._heroes;
   }
 
+  add(name: string) {
+    name = name.trim();
+    if (!name)
+      return;
+
+    this._heroService.create(name)
+      .subscribe(newHero => this.heroes.push(newHero));
+  }
+
   retrieveHeroes(): void {
     this._heroService.getHeroes().subscribe(heroes => {
-      for(const newHero of heroes)
+      for (const newHero of heroes)
         this._heroes.push(newHero);
     });
   }

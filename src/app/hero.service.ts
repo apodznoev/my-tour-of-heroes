@@ -1,75 +1,81 @@
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs/Observable';
 import { Hero } from './hero';
-import { HEROES } from './mock-heroes';
 import { MessageService } from './message.service';
 import { Subject } from 'rxjs/Subject';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { catchError, tap, map } from 'rxjs/operators';
+import { of } from 'rxjs/observable/of';
+
+const httpOptions = {
+  headers: new HttpHeaders({'Content-Type': 'application/json'})
+};
 
 @Injectable()
 export class HeroService {
+  private _apiUrl: string = 'api/v1/heroes';
 
-  constructor(private _messageService: MessageService) {
+  constructor(private _messageService: MessageService, private _http: HttpClient) {
+  }
+
+  log(msg: string) {
+    this._messageService.add(msg);
   }
 
   getHeroes(): Observable<Hero[]> {
-    this._messageService.add('Fetching heroes');
-
-    const subject = new Subject<Hero[]>();
-    subject.subscribe(heroes => {
-      this._messageService.add(heroes.length + ' heroes successfully fetched:');
-    }, error => {
-      this._messageService.add('Error fetching heroes:' + error);
-    }, () => {
-      this._messageService.add('Heroes fetching done');
-    });
-
-    setTimeout(() => {
-      this._messageService.add('Timeout1 ended');
-      subject.next(HEROES.slice(0, HEROES.length / 2));
-    }, 1000);
-    setTimeout(() => {
-      this._messageService.add('Timeout2 ended');
-      subject.next(HEROES.slice(HEROES.length / 2, HEROES.length));
-      subject.complete();
-    }, 3000);
-
-    return subject.asObservable();
+    this.log('Fetching heroes');
+    return this._http.get<any[]>(this._apiUrl).pipe(
+      tap(heroes => this.log(`fetched heroes ${heroes.length}`)),
+      map(heroesRaw => heroesRaw.map(raw => new Hero(raw._id, raw._name, raw._isKillable))),
+      catchError(this.handleError('getHeroes', []))
+    );
   }
 
-  deleteHero(heroId: number): Observable<void> {
-    this._messageService.add(`Deleting hero: ${heroId}`);
-
-    const subject = new Subject<void>();
-    setTimeout(() => {
-      this._messageService.add('Timeout deleting hero ended');
-      const heroIndex = HEROES.findIndex(hero => hero.id === heroId);
-      if (heroIndex > -1) {
-        if (HEROES[heroIndex].isKillable) {
-          HEROES.splice(heroIndex, 1);
-          subject.complete();
-        } else {
-          subject.error('Unkillable');
-        }
-      }
-
-    }, 2000);
-    return subject.asObservable();
+  deleteHero(hero: Hero | number): Observable<void> {
+    const heroId = typeof hero === 'number' ? hero : hero.id;
+    this.log(`Deleting hero: ${heroId}`);
+    return this._http.delete<void>(`${this._apiUrl}/${heroId}`, httpOptions)
+      .pipe(
+        tap(() => this.log(`Hero deleted: ${heroId}`)),
+        catchError(this.handleError<void>(`deleteHero id=${heroId}`))
+      );
   }
 
   getHero(heroId: number): Observable<Hero> {
-    this._messageService.add('Fetching hero by id:' + heroId);
+    this.log('Fetching hero by id:' + heroId);
 
-    const subject = new Subject<Hero>();
-    setTimeout(() => {
-      this._messageService.add('Timeout getting hero ended');
-      const hero = HEROES.find(hero => hero.id === heroId);
-      if (hero != null) {
-        subject.next(hero);
-        subject.complete();
-        return;
-      }
-      subject.error(`Cannot find hero with given id ${heroId}`);
-    }, 2000);
-    return subject.asObservable();
+    return this._http.get<any>(`${this._apiUrl}/${heroId}}`)
+      .pipe(
+        tap(raw => this.log(`Hero got: ${raw._name}`)),
+        map(raw => new Hero(raw._id, raw._name, raw._isKillable)),
+        catchError(this.handleError<Hero>(`getHero id=${heroId}`))
+      );
+  }
+
+  save(_hero: Hero): Observable<Hero> {
+    return this._http.put<Hero>(this._apiUrl, _hero, httpOptions)
+      .pipe(
+        tap(_ => this.log(`Hero was persisted: ${_hero.id}`)),
+        catchError(this.handleError<any>(`updateHero: ${_hero.id}`))
+      );
+  }
+
+  create(_name: string): Observable<Hero> {
+    return this._http.post<any>(this._apiUrl, new Hero(-1, _name, true), httpOptions)
+      .pipe(
+        tap((created) => this.log(`Hero created with id: ${created._id}, name: ${created._name}`)),
+        map(raw => new Hero(raw._id, raw._name, raw._isKillable)),
+        catchError(this.handleError<any>(`createHero: ${_name}`))
+      );
+  }
+
+  private handleError<T>(operation: string, result?: T) {
+    return (error: any): Observable<T> => {
+      console.error(error);
+
+      this.log(`${operation} failed: ${error.message}`);
+
+      return of(result as T);
+    };
   }
 }
