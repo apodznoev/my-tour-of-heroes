@@ -7,12 +7,4 @@
   </li>
 </ul>
 
-<div *ngIf="selectedHero">
-  <h2>{{selectedHero.name | randomChange}} Details</h2>
-  <div><span>id: </span>{{selectedHero.id}}</div>
-  <div>
-    <label>name:
-      <input [(ngModel)]="selectedHero.name" placeholder="name of chosen one">
-    </label>
-  </div>
-</div>
+<app-hero-detail [hero]="selectedHero" (killEvent)="heroKilled($event)"></app-hero-detail>

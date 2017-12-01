@@ -21,4 +21,11 @@ export class HeroesComponent implements OnInit {
   onSelect(hero: Hero) {
     this.selectedHero = hero;
   }
+
+  heroKilled(heroId: number) {
+    console.log("Received kill event for hero:" + heroId);
+    this.selectedHero = null;
+    const index = this.heroes.findIndex(hero => hero.id == heroId);
+    this.heroes.splice(index, 1);
+  }
 }

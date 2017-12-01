@@ -1,0 +1,10 @@
+<div *ngIf="hero">
+  <h2>{{hero.name | randomChange}} Details</h2>
+  <div><span>id: </span>{{hero.id}}</div>
+  <div>
+    <label>name:
+      <input [(ngModel)]="hero.name" placeholder="name of chosen one">
+    </label>
+    <button (click)="kill.emit(hero.id)">Kill hero</button>
+  </div>
+</div>
