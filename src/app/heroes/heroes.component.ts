@@ -1,6 +1,7 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, Injectable, OnInit} from '@angular/core';
 import {Hero} from '../hero';
-import {HEROES} from '../mock-heroes';
+import {HeroService} from '../hero.service';
+import {MessageService} from '../message.service';
 
 @Component({
   selector: 'app-heroes',
@@ -8,24 +9,41 @@ import {HEROES} from '../mock-heroes';
   styleUrls: ['./heroes.component.css']
 })
 
+@Injectable()
 export class HeroesComponent implements OnInit {
-  private heroes = HEROES;
-  private selectedHero: Hero;
+  private _heroes: Hero[] = [];
+  private _selectedHero: Hero;
 
-  constructor() {
+  constructor(private _heroService: HeroService) {
   }
 
   ngOnInit() {
+    this.retrieveHeroes();
+  }
+
+  get selectedHero(): Hero {
+    return this._selectedHero;
+  }
+
+  get heroes(): Hero[] {
+    return this._heroes;
   }
 
   onSelect(hero: Hero) {
-    this.selectedHero = hero;
+    this._selectedHero = hero;
+  }
+
+  retrieveHeroes(): void {
+    this._heroService.getHeroes().subscribe(heroes => {
+      for(const newHero of heroes)
+        this._heroes.push(newHero);
+    });
   }
 
   heroKilled(heroId: number) {
-    console.log("Received kill event for hero:" + heroId);
-    this.selectedHero = null;
-    const index = this.heroes.findIndex(hero => hero.id == heroId);
-    this.heroes.splice(index, 1);
+    console.log('Received kill event for hero:' + heroId);
+    this._selectedHero = null;
+    const index = this._heroes.findIndex(hero => hero.id == heroId);
+    this._heroes.splice(index, 1);
   }
 }
