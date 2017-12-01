@@ -12,7 +12,6 @@ import {MessageService} from '../message.service';
 @Injectable()
 export class HeroesComponent implements OnInit {
   private _heroes: Hero[] = [];
-  private _selectedHero: Hero;
 
   constructor(private _heroService: HeroService) {
   }
@@ -21,16 +20,8 @@ export class HeroesComponent implements OnInit {
     this.retrieveHeroes();
   }
 
-  get selectedHero(): Hero {
-    return this._selectedHero;
-  }
-
   get heroes(): Hero[] {
     return this._heroes;
-  }
-
-  onSelect(hero: Hero) {
-    this._selectedHero = hero;
   }
 
   retrieveHeroes(): void {
@@ -40,10 +31,10 @@ export class HeroesComponent implements OnInit {
     });
   }
 
-  heroKilled(heroId: number) {
-    console.log('Received kill event for hero:' + heroId);
-    this._selectedHero = null;
-    const index = this._heroes.findIndex(hero => hero.id == heroId);
-    this._heroes.splice(index, 1);
-  }
+  // heroKilled(heroId: number) {
+  //   console.log('Received kill event for hero:' + heroId);
+  //   this._selectedHero = null;
+  //   const index = this._heroes.findIndex(hero => hero.id == heroId);
+  //   this._heroes.splice(index, 1);
+  // }
 }

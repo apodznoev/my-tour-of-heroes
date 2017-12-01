@@ -5,6 +5,9 @@
     <label>name:
       <input [(ngModel)]="hero.name" placeholder="name of chosen one">
     </label>
-    <button (click)="kill.emit(hero.id)">Kill hero</button>
+    <div>
+      <button (click)="killHero()">Kill hero</button>
+      <button (click)="goBack()">go back</button>
+    </div>
   </div>
 </div>

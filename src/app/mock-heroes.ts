@@ -1,14 +1,14 @@
 import {Hero} from './hero'
 
 export const HEROES: Hero[] = [
-  new Hero(11, 'Diego'),
-  new Hero(12, 'Milton'),
-  new Hero(13, 'Gorn'),
-  new Hero(14, 'Li'),
-  new Hero(15, 'Lexter'),
-  new Hero(16, 'Vatras'),
-  new Hero(17, 'Jack'),
-  new Hero(18, 'Raven'),
-  new Hero(19, 'Pirokar'),
-  new Hero(20, 'Harald'),
+  new Hero(11, 'Diego', false),
+  new Hero(12, 'Milton', false),
+  new Hero(13, 'Gorn', false),
+  new Hero(14, 'Raven', true),
+  new Hero(15, 'Lexter', false),
+  new Hero(16, 'Vatras', false),
+  new Hero(17, 'Jack', true),
+  new Hero(18, 'Li', false),
+  new Hero(19, 'Pirokar', true),
+  new Hero(20, 'Harald', true),
 ];
