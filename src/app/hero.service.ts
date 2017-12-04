@@ -69,6 +69,17 @@ export class HeroService {
       );
   }
 
+  searchHeroes(term: string): Observable<Hero[]> {
+    if (!term.trim()) {
+      return of([]);
+    }
+    return this._http.get<any[]>(`${this._apiUrl}/?name=${term}`).pipe(
+      tap(heroes => this.log(`Found heroes ${heroes.length} for term ${term}`)),
+      map(heroesRaw => heroesRaw.map(raw => new Hero(raw._id, raw._name, raw._isKillable))),
+      catchError(this.handleError<any>(`searchHero: ${term}`))
+    );
+  }
+
   private handleError<T>(operation: string, result?: T) {
     return (error: any): Observable<T> => {
       console.error(error);
